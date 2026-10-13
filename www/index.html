@@ -187,6 +187,23 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:8px 0 10px}
 .oo button{aspect-ratio:1;border-radius:var(--r);font-size:46px;text-align:center;background:var(--card);border:var(--bd);box-shadow:var(--shs);display:grid;place-items:center;transition:transform .12s}
 .oo.six button{font-size:34px}.oo button.right{background:var(--okbg)}.oo button.wrong{background:var(--badbg)}
 .gmsg{font-size:19px;font-weight:900;min-height:28px;margin:0 0 12px}
+.cells{display:grid;gap:10px}
+.cell{aspect-ratio:1;border-radius:var(--rs);font-size:34px;text-align:center;background:var(--card);border:var(--bd);box-shadow:var(--shs);display:grid;place-items:center;transition:transform .12s}.cell:active{transform:scale(.94)}
+.c4grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:10px;border-radius:var(--rs);background:#2f4fd8;margin-bottom:14px;box-shadow:var(--shs)}
+.c4{aspect-ratio:1;border-radius:50%;border:0;box-shadow:inset 0 3px 6px rgba(0,0,0,.35)}
+.duel{display:flex;flex-direction:column;gap:10px}
+.half{padding:12px;border-radius:var(--r);background:var(--card);border:var(--bd);box-shadow:var(--shs);text-align:center}
+.half.p2{transform:rotate(180deg)}.half .who{font-weight:900;margin-bottom:8px;color:var(--pc)}
+.bigbtn{width:100%;padding:34px 10px;border-radius:var(--r);font-size:24px;font-weight:900;text-align:center;color:#fff;background:var(--pc);border:var(--bd);box-shadow:var(--shbtn);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.bigbtn:active{transform:scale(.97)}
+.mid{text-align:center;font-weight:900;padding:6px;font-size:17px;min-height:40px}
+.track{height:26px;border-radius:99px;box-shadow:var(--sin);border:var(--bdt);background:#3b82f6}
+.qbig{font-size:28px;font-weight:900;margin:4px 0 10px}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.opts3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mb2{padding:14px 6px;border-radius:var(--rs);font-size:24px;font-weight:900;text-align:center;background:var(--card);border:var(--bd);box-shadow:var(--shs);transition:transform .1s}.mb2:active{transform:scale(.95)}.mb2:disabled{opacity:.55}
+.dpad{display:flex;flex-direction:column;align-items:center;gap:6px}.dpad div{display:flex;gap:44px}
+.dpad button{width:56px;height:56px;border-radius:50%;font-size:20px;text-align:center;background:var(--card);border:var(--bd);box-shadow:var(--shs)}
+.sechead{display:flex;align-items:center;gap:8px;margin:6px 0 12px}.sechead h3{margin:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -304,7 +321,7 @@ function home(){
   return `<div class="top"><div class="hello"><div class="av">🧒</div><div><small>Hi, ${esc(S.name)}! 👋</small><h1>Ready to learn something new?</h1></div></div><div style="display:flex;gap:8px"><button class="star" data-act="snd" aria-label="Toggle sound">${S.sound?'🔊':'🔇'}</button><button class="star" data-go="/themes" aria-label="Change theme">🎨</button><div class="star">⭐ ${S.stars}</div></div></div>
   <div class="goal"><div><small>Today's Goal</small><b>${Math.min(n,3)}/3 Lessons</b><div class="bar"><i style="width:${Math.min(100,n/3*100)}%"></i></div></div><div class="emo">${n>=3?'🏆':'📖'}</div></div>
   <div class="sec"><h3>Explore by Subject</h3></div><div class="subs">${tiles()}</div>
-  <div class="sec"><h3>Fun Games</h3><button class="star" data-go="/games" style="padding:4px 12px;font-size:13px">See all</button></div><div class="subs">${GAMES.slice(0,3).map(g=>`<button class="tile" data-go="/game/${g.id}" style="--t:${g.tint}"><span class="ti">${g.emoji}</span>${g.name}</button>`).join('')}</div>
+  <div class="sec"><h3>Fun Games</h3><button class="star" data-go="/games" style="padding:4px 12px;font-size:13px">See all</button></div><div class="subs">${['simon','ttt2','tug'].map(id=>GAMES.find(g=>g.id===id)).map(g=>`<button class="tile" data-go="/game/${g.id}" style="--t:${g.tint}"><span class="ti">${g.emoji}</span>${g.name}</button>`).join('')}</div>
   <div class="sec"><h3>Continue Learning</h3></div>${cont.slice(0,2).map(rowFor).join('')}`;
 }
 function explore(){return `<div class="top"><h1>Explore</h1><div class="star">⭐ ${S.stars}</div></div>${SUBJECTS.map(rowFor).join('')}`}
@@ -313,7 +330,7 @@ function progress(){
   return `<div class="top"><h1>Your Progress</h1></div>
   <div class="sum"><div class="raise"><b>⭐ ${S.stars}</b><small>Stars</small></div><div class="raise"><b>${lessons}</b><small>Lessons</small></div><div class="raise"><b>${Object.keys(S.best).length}</b><small>Quizzes</small></div></div>
   ${SUBJECTS.map(s=>`<div class="row" style="cursor:default"><span class="ti sm" style="--t:${s.tint}">${s.emoji}</span><div class="m"><b>${s.name}</b><small>${doneN(s.id)}/${s.lessons.length} lessons${S.best[s.id]!=null?' · Best quiz '+S.best[s.id]+'/'+s.quiz.length:''}</small><div class="bar p" style="margin-top:8px"><i style="width:${pct(s)}%"></i></div></div></div>`).join('')}
-  <div class="sec" style="margin-top:8px"><h3>Game high scores</h3></div>${GAMES.map(g=>`<div class="row" style="cursor:default"><span class="ti sm" style="--t:${g.tint}">${g.emoji}</span><div class="m"><b>${g.name}</b><small>Best: ${gb(g.id)}</small></div></div>`).join('')}`;
+  <div class="sec" style="margin-top:8px"><h3>Game high scores</h3></div>${GAMES.filter(g=>!g.p2).map(g=>`<div class="row" style="cursor:default"><span class="ti sm" style="--t:${g.tint}">${g.emoji}</span><div class="m"><b>${g.name}</b><small>Best: ${gb(g.id)}</small></div></div>`).join('')}`;
 }
 function themes(){
   return `<div class="top"><h1>Themes</h1><div class="star">${THEMES.length} styles</div></div><p style="color:var(--mute);margin:0 0 16px">Pick a look. The whole app changes instantly.</p><div class="tgrid">${THEMES.map(([k,n,d])=>`<button class="tp ${S.theme===k?'sel':''}" data-act="theme" data-t="${k}"><div class="tpv" data-theme="${k}"><div class="mc"><b>Aa</b><span></span></div><div class="mb">Play</div></div><b>${n}</b><small>${d}</small>${S.theme===k?'<span class="chk">✓ Active</span>':''}</button>`).join('')}</div>`;
@@ -368,9 +385,21 @@ const GAMES=[
  {id:'scramble',name:'Word Scramble',emoji:'🔤',tint:'#c4eccb',desc:'Unscramble the word.',mount:scramble},
  {id:'hangman',name:'Hangman Zoo',emoji:'🦒',tint:'#ffe3a3',desc:'Guess the animal.',mount:hangman},
  {id:'mole',name:'Whack-a-Mole',emoji:'🐹',tint:'#d9c8ff',desc:'Tap moles, skip bombs.',mount:mole},
- {id:'odd',name:'Odd One Out',emoji:'🧐',tint:'#bfe3ff',desc:'Find the different one.',mount:odd}];
+ {id:'odd',name:'Odd One Out',emoji:'🧐',tint:'#bfe3ff',desc:'Find the different one.',mount:odd},
+ {id:'snake',name:'Snake',emoji:'🐍',tint:'#c4eccb',desc:'Eat apples, do not bite yourself.',mount:snake},
+ {id:'farm',name:'Counting Farm',emoji:'🐄',tint:'#ffe3a3',desc:'Count the animals.',mount:farm},
+ {id:'colormatch',name:'Color Match',emoji:'🌈',tint:'#ffc6d9',desc:'Tap the ink colour.',mount:colormatch},
+ {id:'ttt2',name:'Tic-Tac-Toe',emoji:'❌',tint:'#bfe3ff',desc:'Two players, one phone.',p2:1,mount:ttt2},
+ {id:'connect4',name:'Connect Four',emoji:'🔴',tint:'#ffd9a8',desc:'Get four in a row.',p2:1,mount:connect4},
+ {id:'tug',name:'Tug of War',emoji:'🪢',tint:'#d9c8ff',desc:'Tap fastest to win.',p2:1,mount:tug},
+ {id:'react',name:'Reaction Duel',emoji:'⚡',tint:'#fff0b0',desc:'First to tap on green.',p2:1,mount:react},
+ {id:'mathduel',name:'Math Duel',emoji:'🧮',tint:'#c8d4ff',desc:'Solve it first.',p2:1,mount:mathduel},
+ {id:'rps2',name:'Rock Paper Scissors',emoji:'✌️',tint:'#ffc6d9',desc:'Pick in secret, then reveal.',p2:1,mount:rps2}];
 function gamesList(){
-  return `<div class="top"><h1>Games</h1><div class="star">⭐ ${S.stars}</div></div><div class="tgrid">${GAMES.map(g=>`<button class="gc" data-go="/game/${g.id}"><span class="gi" style="--t:${g.tint}">${g.emoji}</span><b>${g.name}</b><small>${g.desc}</small><span class="bs">${gb(g.id)?'Best: '+gb(g.id):'New!'}</span></button>`).join('')}</div>`}
+  const card=g=>`<button class="gc" data-go="/game/${g.id}"><span class="gi" style="--t:${g.tint}">${g.emoji}</span><b>${g.name}</b><small>${g.desc}</small><span class="bs">${g.p2?'👥 2 players':gb(g.id)?'Best: '+gb(g.id):'New!'}</span></button>`;
+  return `<div class="top"><h1>Games</h1><div class="star">⭐ ${S.stars}</div></div>
+  <div class="sechead"><h3>👥 2 Players · one phone</h3></div><div class="tgrid" style="margin-bottom:22px">${GAMES.filter(g=>g.p2).map(card).join('')}</div>
+  <div class="sechead"><h3>🙋 1 Player</h3></div><div class="tgrid">${GAMES.filter(g=>!g.p2).map(card).join('')}</div>`}
 function gameScreen(id){
   const g=GAMES.find(x=>x.id===id);if(!g){go('/games');return ''}
   return `<div class="top"><button class="back" style="position:static" data-go="/games" aria-label="Back">←</button><h1 style="flex:1;margin-left:6px">${g.name}</h1><div class="star" id="gstar">⭐ ${S.stars}</div></div><div class="raise gstage" id="gstage"></div>`}
@@ -483,6 +512,172 @@ function odd(el){
       if(ok){score++;sfx('correct')}else{b.classList.add('wrong');sfx('wrong')}
       tm.push(setTimeout(()=>{r++;next()},900))})}
   start();return()=>tm.forEach(clearTimeout)}
+
+/* ===== MORE GAMES (1 player + 2 players) ===== */
+const rand=n=>Math.floor(Math.random()*n);
+const WL=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function ttt2(el){
+  let b,turn,over,sc={X:0,O:0,D:0};
+  const em=t=>t==='X'?'❌':'⭕';
+  function start(){b=Array(9).fill(null);turn='X';over=false;draw()}
+  function draw(msg){
+    el.innerHTML=chips([['❌ '+sc.X],['⭕ '+sc.O],['🤝 '+sc.D]])+`<p class="gmsg">${msg||'Turn: '+em(turn)}</p><div class="cells" style="grid-template-columns:repeat(3,1fr);max-width:320px;margin:0 auto 14px"></div>${over?'<button class="cta" id="ag">Play again</button>':''}`;
+    const g=el.querySelector('.cells');
+    b.forEach((v,i)=>{const c=document.createElement('button');c.className='cell';c.textContent=v?em(v):'';c.setAttribute('aria-label','Square '+(i+1));c.onclick=()=>play(i);g.appendChild(c)});
+    const a=el.querySelector('#ag');if(a)a.onclick=()=>{sfx('tap');start()}}
+  function play(i){
+    if(over||b[i])return;b[i]=turn;sfx('tap');
+    if(WL.some(l=>l.every(k=>b[k]===turn))){over=true;sc[turn]++;gadd(5);sfx('end',2);return draw(em(turn)+' wins!')}
+    if(b.every(Boolean)){over=true;sc.D++;sfx('end',0);return draw('Draw!')}
+    turn=turn==='X'?'O':'X';draw()}
+  start()}
+
+function connect4(el){
+  const R=6,C=7,col=['#ef4444','#facc15'];let g,turn,over,sc=[0,0];
+  function start(){g=Array.from({length:R},()=>Array(C).fill(-1));turn=0;over=false;draw()}
+  function win(r,c){const p=g[r][c];for(const [dr,dc] of [[0,1],[1,0],[1,1],[1,-1]]){let n=1;for(const s of [1,-1]){let rr=r+dr*s,cc=c+dc*s;while(rr>=0&&rr<R&&cc>=0&&cc<C&&g[rr][cc]===p){n++;rr+=dr*s;cc+=dc*s}}if(n>=4)return true}return false}
+  function drop(c){
+    if(over)return;let r=R-1;while(r>=0&&g[r][c]!==-1)r--;if(r<0){sfx('wrong');return}
+    g[r][c]=turn;sfx('tap');
+    if(win(r,c)){over=true;sc[turn]++;gadd(5);sfx('end',2);return draw((turn?'🟡':'🔴')+' wins!')}
+    if(g[0].every(x=>x!==-1)){over=true;sfx('end',0);return draw('Draw!')}
+    turn=1-turn;draw()}
+  function draw(msg){
+    el.innerHTML=chips([['🔴 '+sc[0]],['🟡 '+sc[1]]])+`<p class="gmsg">${msg||'Turn: '+(turn?'🟡':'🔴')}</p><div class="c4grid">${g.map(row=>row.map((v,c)=>`<button class="c4" data-c="${c}" aria-label="Column ${c+1}" style="background:${v<0?'#eef0ff':col[v]}"></button>`).join('')).join('')}</div>${over?'<button class="cta" id="ag">Play again</button>':''}`;
+    el.querySelectorAll('.c4').forEach(b=>b.onclick=()=>drop(+b.dataset.c));
+    const a=el.querySelector('#ag');if(a)a.onclick=()=>{sfx('tap');start()}}
+  start()}
+
+function tug(el){
+  let pos,run,tm=[];
+  function start(){
+    pos=50;run=false;
+    el.innerHTML=`<div class="duel"><div class="half p2" style="--pc:#ef4444"><div class="who">Player 2</div><button class="bigbtn" id="b2">TAP FAST!</button></div><div class="mid" id="md">Get ready…</div><div class="track" id="tr"></div><div class="half" style="--pc:#3b82f6"><div class="who">Player 1</div><button class="bigbtn" id="b1">TAP FAST!</button></div></div>`;
+    const md=el.querySelector('#md'),tr=el.querySelector('#tr');
+    const paint=()=>{tr.style.background=`linear-gradient(90deg,#3b82f6 ${pos}%,#ef4444 ${pos}%)`};paint();
+    const pull=d=>{if(!run)return;pos=Math.max(0,Math.min(100,pos+d));paint();
+      if(pos<=0||pos>=100){run=false;const w=pos>=100?1:2;sfx('end',2);gadd(5);md.textContent='🏆 Player '+w+' wins!';
+        el.insertAdjacentHTML('beforeend','<button class="cta" id="ag">Play again</button>');el.querySelector('#ag').onclick=()=>{sfx('tap');start()}}};
+    ['1','2'].forEach(k=>el.querySelector('#b'+k).addEventListener('pointerdown',e=>{e.preventDefault();pull(k==='1'?2.2:-2.2)}));
+    ['3','2','1','GO!'].forEach((t,i)=>tm.push(setTimeout(()=>{md.textContent=t;sfx(i===3?'correct':'tap');if(i===3)run=true},i*800)))}
+  start();return()=>tm.forEach(clearTimeout)}
+
+function react(el){
+  let s,state,tm=[];
+  const later=(f,ms)=>{tm.push(setTimeout(f,ms))};
+  function start(){
+    s=[0,0];state='idle';
+    el.innerHTML=`<div class="duel"><div class="half p2" style="--pc:#ef4444"><div class="who">Player 2</div><button class="bigbtn pad2" data-p="1">TAP</button></div><div class="mid" id="md"></div><div class="half" style="--pc:#3b82f6"><div class="who">Player 1</div><button class="bigbtn pad2" data-p="0">TAP</button></div></div>`;
+    const md=el.querySelector('#md'),pads=[...el.querySelectorAll('.pad2')];
+    const paint=c=>pads.forEach(x=>x.style.background=c),score=()=>'P1 '+s[0]+' – '+s[1]+' P2';
+    function round(){state='wait';paint('#ef4444');md.textContent='Wait for GREEN… '+score();
+      later(()=>{if(state!=='wait')return;state='go';paint('#22c55e');md.textContent='GO!';sfx('note',3)},1500+Math.random()*2500)}
+    function point(p,why){
+      state='over';s[p]++;sfx('correct');md.textContent='P'+(p+1)+' scores! '+why+'  '+score();
+      if(s[p]>=3)later(()=>{md.textContent='🏆 Player '+(p+1)+' wins!';gadd(5);sfx('end',2);el.insertAdjacentHTML('beforeend','<button class="cta" id="ag">Play again</button>');el.querySelector('#ag').onclick=()=>{sfx('tap');start()}},900);
+      else later(round,1500)}
+    pads.forEach(pd=>pd.addEventListener('pointerdown',e=>{e.preventDefault();const p=+pd.dataset.p;
+      if(state==='wait')point(1-p,'(P'+(p+1)+' tapped too early)');else if(state==='go')point(p,'Fast!')}));
+    md.textContent='Get ready… first to 3 wins';later(round,1200)}
+  start();return()=>tm.forEach(clearTimeout)}
+
+function mathduel(el){
+  let s,ans,lock,done,tm=[];
+  function start(){s=[0,0];q()}
+  function q(){
+    const a=2+rand(10),b=2+rand(10),op=['+','−','×'][rand(3)];ans=op==='+'?a+b:op==='−'?a-b:a*b;
+    const set=new Set([ans]);while(set.size<4)set.add(Math.max(0,ans+rand(11)-5));
+    lock=[false,false];done=false;
+    const half=(p,cls,c)=>`<div class="half ${cls}" style="--pc:${c}"><div class="who">Player ${p+1}</div><div class="qbig">${a} ${op} ${b} = ?</div><div class="opts2">${shuffle([...set]).map(v=>`<button class="mb2" data-p="${p}" data-v="${v}">${v}</button>`).join('')}</div></div>`;
+    el.innerHTML=`<div class="duel">${half(1,'p2','#ef4444')}<div class="mid">P1 ${s[0]} – ${s[1]} P2 (first to 5)</div>${half(0,'','#3b82f6')}</div>`;
+    el.querySelectorAll('.mb2').forEach(b=>b.onclick=()=>{
+      const p=+b.dataset.p;if(done||lock[p])return;
+      if(+b.dataset.v===ans){done=true;s[p]++;sfx('correct');b.style.background='var(--okbg)';tm.push(setTimeout(()=>s[p]>=5?end(p):q(),900))}
+      else{lock[p]=true;sfx('wrong');b.style.background='var(--badbg)';b.disabled=true;if(lock[0]&&lock[1]){done=true;tm.push(setTimeout(q,800))}}})}
+  function end(p){
+    gadd(5);sfx('end',2);
+    el.innerHTML=`<div class="trophy">🏆</div><h2>Player ${p+1} wins!</h2><p style="color:var(--mute)">P1 ${s[0]} – ${s[1]} P2</p><button class="cta" id="ag">Play again</button>`;
+    el.querySelector('#ag').onclick=()=>{sfx('tap');start()}}
+  start();return()=>tm.forEach(clearTimeout)}
+
+function rps2(el){
+  const E=['✊','✋','✌️'];let s,ch,lock,tm=[];
+  function start(){s=[0,0];ch=[null,null];lock=false;draw('Pick one!')}
+  function side(p,cls,c){
+    const x=ch[p];
+    return `<div class="half ${cls}" style="--pc:${c}"><div class="who">Player ${p+1}</div>${lock?`<div class="qbig">${E[x]}</div>`:x!=null?'<div class="qbig">✔ Ready</div>':`<div class="opts3">${E.map((e,i)=>`<button class="mb2" data-p="${p}" data-i="${i}">${e}</button>`).join('')}</div>`}</div>`}
+  function draw(msg){
+    el.innerHTML=`<div class="duel">${side(1,'p2','#ef4444')}<div class="mid">${msg}<br>P1 ${s[0]} – ${s[1]} P2 (first to 3)</div>${side(0,'','#3b82f6')}</div>`;
+    el.querySelectorAll('.mb2').forEach(b=>b.onclick=()=>pick(+b.dataset.p,+b.dataset.i))}
+  function pick(p,i){
+    if(lock||ch[p]!=null)return;ch[p]=i;sfx('tap');
+    if(ch[0]!=null&&ch[1]!=null){
+      lock=true;const r=(ch[0]-ch[1]+3)%3,w=r===1?0:r===2?1:-1;if(w>=0)s[w]++;sfx(w<0?'tap':'correct');
+      draw(E[ch[0]]+' vs '+E[ch[1]]+' – '+(w<0?'Draw!':'Player '+(w+1)+' wins the round!'));
+      tm.push(setTimeout(()=>{
+        if(s[0]>=3||s[1]>=3){const f=s[0]>=3?0:1;gadd(5);sfx('end',2);
+          el.innerHTML=`<div class="trophy">🏆</div><h2>Player ${f+1} wins!</h2><p style="color:var(--mute)">P1 ${s[0]} – ${s[1]} P2</p><button class="cta" id="ag">Play again</button>`;
+          el.querySelector('#ag').onclick=()=>{sfx('tap');start()}}
+        else{ch=[null,null];lock=false;draw('Pick one!')}},1900))}
+    else draw('Pick one!')}
+  start();return()=>tm.forEach(clearTimeout)}
+
+function snake(el){
+  const N=15,Z=20,V={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]};let sn,dir,nd,food,score,iv;
+  const stop=()=>clearInterval(iv);
+  const steer=k=>{const v=V[k];if(v&&dir&&!(v[0]===-dir[0]&&v[1]===-dir[1]))nd=v};
+  const place=()=>{do{food=[rand(N),rand(N)]}while(sn.some(s=>s[0]===food[0]&&s[1]===food[1]))};
+  const kd=e=>{const m={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r'}[e.key];if(m){e.preventDefault();steer(m)}};
+  document.addEventListener('keydown',kd);
+  function build(){
+    el.innerHTML=chips([['Score 0','ss'],['Best '+gb('snake')]])+`<canvas id="cv" class="arena" width="300" height="300" style="width:100%;max-width:300px;height:auto;display:block;margin:0 auto 12px;touch-action:none"></canvas><div class="dpad"><button data-d="u" aria-label="Up">▲</button><div><button data-d="l" aria-label="Left">◀</button><button data-d="r" aria-label="Right">▶</button></div><button data-d="d" aria-label="Down">▼</button></div>`;
+    const cv=el.querySelector('#cv'),x=cv.getContext&&cv.getContext('2d');
+    el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>steer(b.dataset.d));
+    let tx=0,ty=0;
+    cv.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+    cv.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;steer(Math.abs(dx)>Math.abs(dy)?(dx>0?'r':'l'):(dy>0?'d':'u'))});
+    sn=[[7,7],[6,7],[5,7]];dir=[1,0];nd=dir;score=0;place();
+    const paint=()=>{if(!x)return;x.clearRect(0,0,300,300);sn.forEach((s,i)=>{x.fillStyle=i?'#22c55e':'#15803d';x.fillRect(s[0]*Z+1,s[1]*Z+1,Z-2,Z-2)});x.font='17px serif';x.fillText('🍎',food[0]*Z+1,food[1]*Z+16)};
+    const tick=()=>{
+      dir=nd;const h=[(sn[0][0]+dir[0]+N)%N,(sn[0][1]+dir[1]+N)%N];
+      if(sn.some(s=>s[0]===h[0]&&s[1]===h[1])){stop();sfx('wrong');endScreen(el,'snake',score,'apples',build);return}
+      sn.unshift(h);
+      if(h[0]===food[0]&&h[1]===food[1]){score++;sfx('pop');place();el.querySelector('#ss').textContent='Score '+score}else sn.pop();
+      paint()};
+    paint();stop();iv=setInterval(tick,170)}
+  build();return()=>{stop();document.removeEventListener('keydown',kd)}}
+
+function farm(el){
+  let r,score,tm=[];const EM=['🐄','🐑','🐔','🐷','🐴','🦆'];
+  function start(){r=0;score=0;next()}
+  function next(){
+    if(r>=8)return endScreen(el,'farm',score,'correct',start);
+    const n=1+rand(9),e=EM[rand(6)],set=new Set([n]);while(set.size<4)set.add(1+rand(10));
+    el.innerHTML=chips([['Round '+(r+1)+'/8'],['Score '+score]])+`<p class="gmsg">How many ${e}?</p><div class="arena" style="height:auto;min-height:160px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;padding:14px;font-size:38px">${Array.from({length:n},()=>`<span style="display:inline-block;transform:rotate(${rand(30)-15}deg)">${e}</span>`).join('')}</div><div class="opts2" style="margin-top:12px">${shuffle([...set]).map(v=>`<button class="mb2" data-v="${v}">${v}</button>`).join('')}</div>`;
+    const bs=[...el.querySelectorAll('.mb2')];
+    bs.forEach(b=>b.onclick=()=>{
+      bs.forEach(x=>{x.disabled=true;if(+x.dataset.v===n)x.style.background='var(--okbg)'});
+      if(+b.dataset.v===n){score++;sfx('correct')}else{b.style.background='var(--badbg)';sfx('wrong')}
+      tm.push(setTimeout(()=>{r++;next()},900))})}
+  start();return()=>tm.forEach(clearTimeout)}
+
+function colormatch(el){
+  const C=[['RED','#ef4444'],['BLUE','#3b82f6'],['GREEN','#22c55e'],['YELLOW','#facc15'],['PURPLE','#a855f7'],['ORANGE','#f97316']];
+  let score,t,iv,run;const stop=()=>{run=false;clearInterval(iv)};
+  function start(){
+    score=0;t=30;run=true;
+    el.innerHTML=chips([['⏱ 30s','ct'],['Score 0','cs']])+`<p class="gmsg">Tap the COLOR of the word, not what it says</p><div id="cw" style="font-size:54px;font-weight:900;margin:12px 0 18px"></div><div class="opts2" id="co"></div>`;
+    const cw=el.querySelector('#cw'),co=el.querySelector('#co');
+    const ui=()=>{el.querySelector('#ct').textContent='⏱ '+t+'s';el.querySelector('#cs').textContent='Score '+score};
+    function next(){
+      const wi=rand(6);let ci;do{ci=rand(6)}while(ci===wi);
+      cw.textContent=C[wi][0];cw.style.color=C[ci][1];
+      const ids=shuffle([ci,...shuffle([0,1,2,3,4,5].filter(k=>k!==ci)).slice(0,3)]);
+      co.innerHTML=ids.map(k=>`<button class="mb2" data-k="${k}" aria-label="${C[k][0]}" style="height:64px;background:${C[k][1]}"></button>`).join('');
+      co.querySelectorAll('.mb2').forEach(b=>b.onclick=()=>{if(!run)return;if(+b.dataset.k===ci){score++;sfx('pop')}else sfx('wrong');ui();next()})}
+    next();ui();
+    iv=setInterval(()=>{t--;ui();if(t<=0){stop();endScreen(el,'colormatch',score,'correct',start)}},1000)}
+  start();return stop}
 
 function drawNav(tab){
   const t=[['home','🏠','Home'],['explore','🔍','Explore'],['games','🎮','Games'],['progress','📊','Progress'],['themes','🎨','Themes'],['profile','👤','Profile']];
